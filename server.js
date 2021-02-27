@@ -3,11 +3,19 @@ const path = require('path');
 const express = require('express');
 const PORT = process.env.PORT || 3001;
 const app = express();
+const apiRoutes = require('./routes/htmlRoutes');
+const htmlRoutes = require('./routes/htmlRoutes');
+
+
+// directs server to retrieve data from PUBLIC folder
+app.use(express.static('public'));
 
 // parse incoming string or array data
 app.use(express.urlencoded({ extended: true }));
 // parse incoming JSON data
 app.use(express.json());
+app.use('/api', apiRoutes);
+app.use('/', htmlRoutes);
 
 app.listen(PORT, () => {
     console.log(`API server now on port ${PORT}!`);
@@ -102,6 +110,21 @@ app.get('/api/animals/:id', (req, res) => {
     }
 });
 
+// DATA that req and responds to public folder for index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+// DATA that req and responds to public folder for animals.html
+app.get('/animals', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+
+// DATA that req and responds to a public folder for zookeepers.html
+app.get('/zookeepers', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+});
+
 app.post('/api/animals', (req, res) => {
     // set id based on what the next index of the array will be
     req.body.id = animals.length.toString();
@@ -114,3 +137,4 @@ app.post('/api/animals', (req, res) => {
       res.json(animal);
     }
 });
+
